@@ -658,5 +658,139 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(backBtn) backBtn.addEventListener('click', backStep);
   if(resetBtn) resetBtn.addEventListener('click', resetSteps);
 });
-</script></body>
+</script>
+<style>
+/* เอฟเฟกต์ประกายบน progress + ไฮไลต์สเต็ป */
+.step.flash { box-shadow: 0 0 22px rgba(59,130,246,.35); transform: translateY(-2px); }
+@keyframes dotMove { from { left:-10px; } to { left: 100%; } }
+.progress-fill .spark {
+  position:absolute; top:-4px; width:10px; height:20px; border-radius:6px;
+  background: rgba(255,255,255,.7); filter: blur(2px); animation: dotMove 2.2s linear infinite;
+}
+</style>
+
+<script>
+/* ===== Viewer Animation (อ่านอย่างเดียว) ===== */
+(function viewerAnimation(){
+  // เล่นเฉพาะฝั่งลูกค้าเท่านั้น (ถ้ามีโหมดแอดมินจะไม่เล่น)
+  if (window.ROLE === 'admin') return;
+
+  // เพิ่มประกายวิ่งบน progress bar
+  const fill = document.getElementById('progressFill');
+  if (fill && !fill.querySelector('.spark')) {
+    const s = document.createElement('div'); s.className = 'spark'; fill.appendChild(s);
+  }
+
+  // clone state จริง เพื่อ “จำลอง” การเดินสเต็ปเท่านั้น
+  const steps = (window.CASE_DATA?.steps || []).map(s => ({...s}));
+  const total = steps.length;
+  const realStatus = CASE_DATA.status;
+  const realPct = CASE_DATA.progressPct ?? 0;
+
+  // หาเป้าหมายสุดท้าย (ถึงสเต็ปที่ active/ล่าสุด)
+  const lastCompleted = Math.max(-1, ...steps.map((s,i)=>s.state==='completed'?i:-1));
+  const activeIdx = steps.findIndex(s=>s.state==='active');
+  const targetIdx = activeIdx > -1 ? activeIdx : lastCompleted;
+
+  // เริ่มแอนิเมชันจาก 0 -> targetIdx
+  let i = 0;
+  const delay = 650; // ms ยิ่งน้อยยิ่งเร็ว
+  const ticker = setInterval(()=>{
+    // อัปเดตสเต็ปบน DOM (ไม่แตะ CASE_DATA)
+    document.querySelectorAll('#stepper .step').forEach((el,idx)=>{
+      el.classList.remove('completed','active','flash');
+      if (idx < i) el.classList.add('completed');
+      if (idx === i) { el.classList.add('active','flash'); }
+    });
+
+    // บาร์คืบหน้าให้ไหลตาม
+    const pct = Math.round(((i + 0.5) / total) * 100);
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+
+    if (i >= targetIdx) {
+      clearInterval(ticker);
+      // กลับสู่สถานะจริงของระบบให้ค่าตรงเป๊ะ
+      setTimeout(()=>{
+        document.querySelectorAll('#stepper .step').forEach(el=>el.classList.remove('flash'));
+        if (typeof hydrate === 'function') hydrate(); // เรนเดอร์จาก CASE_DATA เดิม
+        if (realPct) {
+          document.getElementById('progressFill').style.width = realPct + '%';
+          document.getElementById('progressPct').textContent = realPct + '%';
+        }
+        if (realStatus) document.getElementById('caseStatus').textContent = realStatus;
+      }, 600);
+    }
+    i++;
+  }, delay);
+})();
+</script>
+<style>
+/* เอฟเฟกต์ประกายบน progress + ไฮไลต์สเต็ป */
+.step.flash { box-shadow: 0 0 22px rgba(59,130,246,.35); transform: translateY(-2px); }
+@keyframes dotMove { from { left:-10px; } to { left: 100%; } }
+.progress-fill .spark {
+  position:absolute; top:-4px; width:10px; height:20px; border-radius:6px;
+  background: rgba(255,255,255,.7); filter: blur(2px); animation: dotMove 2.2s linear infinite;
+}
+</style>
+
+<script>
+/* ===== Viewer Animation (อ่านอย่างเดียว) ===== */
+(function viewerAnimation(){
+  // เล่นเฉพาะฝั่งลูกค้าเท่านั้น (ถ้ามีโหมดแอดมินจะไม่เล่น)
+  if (window.ROLE === 'admin') return;
+
+  // เพิ่มประกายวิ่งบน progress bar
+  const fill = document.getElementById('progressFill');
+  if (fill && !fill.querySelector('.spark')) {
+    const s = document.createElement('div'); s.className = 'spark'; fill.appendChild(s);
+  }
+
+  // clone state จริง เพื่อ “จำลอง” การเดินสเต็ปเท่านั้น
+  const steps = (window.CASE_DATA?.steps || []).map(s => ({...s}));
+  const total = steps.length;
+  const realStatus = CASE_DATA.status;
+  const realPct = CASE_DATA.progressPct ?? 0;
+
+  // หาเป้าหมายสุดท้าย (ถึงสเต็ปที่ active/ล่าสุด)
+  const lastCompleted = Math.max(-1, ...steps.map((s,i)=>s.state==='completed'?i:-1));
+  const activeIdx = steps.findIndex(s=>s.state==='active');
+  const targetIdx = activeIdx > -1 ? activeIdx : lastCompleted;
+
+  // เริ่มแอนิเมชันจาก 0 -> targetIdx
+  let i = 0;
+  const delay = 650; // ms ยิ่งน้อยยิ่งเร็ว
+  const ticker = setInterval(()=>{
+    // อัปเดตสเต็ปบน DOM (ไม่แตะ CASE_DATA)
+    document.querySelectorAll('#stepper .step').forEach((el,idx)=>{
+      el.classList.remove('completed','active','flash');
+      if (idx < i) el.classList.add('completed');
+      if (idx === i) { el.classList.add('active','flash'); }
+    });
+
+    // บาร์คืบหน้าให้ไหลตาม
+    const pct = Math.round(((i + 0.5) / total) * 100);
+    document.getElementById('progressPct').textContent = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+
+    if (i >= targetIdx) {
+      clearInterval(ticker);
+      // กลับสู่สถานะจริงของระบบให้ค่าตรงเป๊ะ
+      setTimeout(()=>{
+        document.querySelectorAll('#stepper .step').forEach(el=>el.classList.remove('flash'));
+        if (typeof hydrate === 'function') hydrate(); // เรนเดอร์จาก CASE_DATA เดิม
+        if (realPct) {
+          document.getElementById('progressFill').style.width = realPct + '%';
+          document.getElementById('progressPct').textContent = realPct + '%';
+        }
+        if (realStatus) document.getElementById('caseStatus').textContent = realStatus;
+      }, 400);
+    }
+    i++;
+  }, delay);
+})();
+</script>
+
+</body>
 </html>
