@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport">
+<title>R.Good Service — พอร์ทัลลูกค้า</title>
+<meta content="ศูนย์เอกสารและติดตามสถานะแบบเรียลไทม์ — โทนมืด" name="description"/>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: rgba(30, 41, 59, 0.8);
+    --card-hover: rgba(51, 65, 85, 0.9);
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: rgba(148, 163, 184, 0.2);
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --radius: 16px;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15), transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.1), transparent 50%),
+      linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  header {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 20px;
+    background: var(--card); border: 1px solid var(--glass-border); border-radius: 20px; backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px var(--shadow);
+  }
+  .logo {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; color: white;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+  }
+  .header-content h1 {
+    font-size: 22px; font-weight: 600;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .header-status { display: flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--text-muted); font-size: 14px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+  .header-actions { margin-left: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .last-update { color: var(--text-muted); font-size: 13px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 1px solid var(--border);
+    border-radius: 12px; background: var(--card); color: var(--text); font-weight: 500; cursor: pointer;
+    transition: all .2s ease; text-decoration: none; backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0,0,0,.2); font-size: 14px;
+  }
+  .btn:hover { background: var(--card-hover); border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,.3); }
+  .btn.primary { background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%); border-color: transparent; color: white; font-weight: 600; }
+  .btn.primary:hover { background: linear-gradient(135deg, var(--accent-hover) 0%, #7c3aed 100%); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(59,130,246,.4); }
+  .btn.ghost { background: transparent; border-color: var(--border); box-shadow: none; }
+  .btn.ghost:hover { background: var(--card); }
+  .btn.tiny { padding: 6px 10px; font-size: 12px; border-radius: 10px; }
+  .card { background: var(--card); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 20px; backdrop-filter: blur(16px); box-shadow: 0 8px 32px var(--shadow); transition: all .2s ease; }
+  .card:hover { background: var(--card-hover); box-shadow: 0 12px 40px var(--shadow); }
+  .tabs, nav.tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .tab, .tabs a { padding: 12px 20px; border-radius: 50px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all .2s ease; font-weight: 500; font-size: 14px; text-decoration: none; }
+  .tab.active, .tabs a.active { background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%); border-color: transparent; color: white; box-shadow: 0 4px 16px rgba(59,130,246,.3); }
+  .tab:hover:not(.active), .tabs a:hover:not(.active) { background: var(--card); border-color: var(--accent); }
+  .hidden { display: none !important; }
+  /* Layouts reused */
+  .case-overview { display: grid; grid-template-columns: 1fr 300px; gap: 20px; margin-bottom: 20px; }
+  @media (max-width: 768px) { .case-overview { grid-template-columns: 1fr; } }
+  .main-case-info { background: var(--card); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 24px; backdrop-filter: blur(16px); box-shadow: 0 8px 32px var(--shadow); }
+  .case-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .case-title { font-size: 18px; font-weight: 600; color: var(--text); }
+  .case-pills { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+  .case-pill { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); border-radius: 50px; padding: 6px 12px; font-size: 13px; color: var(--accent); font-weight: 500; }
+  .product-info { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 8px; }
+  .info-tile { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: rgba(148,163,184,0.06); backdrop-filter: blur(6px); }
+  .info-label { display: block; font-size: 12px; letter-spacing: .3px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+  .info-value { font-weight: 600; color: var(--text); word-break: break-word; }
+  @media (max-width: 768px) { .product-info { grid-template-columns: 1fr; } }
+  .progress-container { margin: 20px 0; }
+  .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+  .progress-group { display: flex; align-items: center; gap: 8px; }
+  .progress-label { font-weight: 500; color: var(--text); }
+  .progress-percentage { font-weight: 700; font-size: 16px; color: var(--accent); }
+  .progress-bar { height: 12px; background: rgba(148,163,184,0.1); border: 1px solid var(--border); border-radius: 50px; overflow: hidden; position: relative; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, #10b981 100%); border-radius: 50px; transition: width .6s ease; position: relative; }
+  .progress-fill::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent); animation: shimmer 2s infinite; }
+  @keyframes shimmer { 0%{transform:translateX(-100%);} 100%{transform:translateX(100%);} }
+  .stepper-container { margin: 24px 0; }
+  .stepper { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+  .step { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px 8px; text-align: center; transition: all .3s ease; backdrop-filter: blur(8px); }
+  .step.completed { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); }
+  .step.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); box-shadow: 0 0 20px rgba(59,130,246,0.2); }
+  .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-muted); margin: 0 auto 8px; transition: all .3s ease; }
+  .step.completed .step-dot { background: var(--success); }
+  .step.active .step-dot { background: var(--accent); animation: pulse-dot 2s infinite; }
+  @keyframes pulse-dot { 0%,100%{transform:scale(1);} 50%{transform:scale(1.2);} }
+  .step-label { font-size: 11px; font-weight: 600; margin-bottom: 4px; color: var(--text); line-height: 1.3; }
+  .step.completed .step-label { color: var(--success); }
+  .step.active .step-label { color: var(--accent); }
+  .step-date { font-size: 9px; color: var(--text-muted); line-height: 1.2; }
+  .section-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .section-title { font-size: 18px; font-weight: 600; }
+  .table-container table { width:100%; border-collapse: collapse; }
+  .table-container th, .table-container td { padding:12px; border-bottom: 1px solid var(--border); text-align:left; }
+  .status-badge { padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 12px; }
+  .status-badge.success { color: var(--success); border-color: rgba(16,185,129,.4); background: rgba(16,185,129,.08); }
+  .status-badge.pending { color: var(--warning); border-color: rgba(245,158,11,.4); background: rgba(245,158,11,.08); }
+  .chat-container { border: 1px solid var(--glass-border); border-radius: 16px; overflow:hidden; }
+  .chat-messages { max-height: 60vh; overflow:auto; padding: 16px; display:flex; flex-direction:column; gap:12px; background: rgba(148,163,184,.06); }
+  .chat-message { display:flex; gap:8px; }
+  .chat-message.own { justify-content: flex-end; }
+  .chat-bubble { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; max-width: 70ch; }
+  .chat-time { color: var(--text-muted); font-size: 12px; margin-top: 6px; }
+  .chat-input-area { display:flex; gap:8px; padding: 10px; background: var(--card); border-top: 1px solid var(--glass-border); }
+  .chat-input { width: 100%; resize: none; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(148,163,184,.06); color: var(--text); }
+  /* Modals & notifications */
+  dialog { border: 1px solid var(--glass-border); border-radius: 16px; padding: 0; background: var(--card); color: var(--text); width: min(600px, 92vw); }
+  .modal-header { display:flex; justify-content: space-between; align-items:center; padding: 16px; border-bottom: 1px solid var(--glass-border); }
+  .modal-title { font-weight: 600; }
+  .modal-content { padding: 16px; }
+  .form-group { margin-bottom: 12px; }
+  .form-label { display:block; margin-bottom:6px; color: var(--text-muted); font-size: 14px; }
+  .form-input, .form-select, textarea.form-input { width:100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(148,163,184,.06); color: var(--text); }
+  .modal-actions { display:flex; gap: 8px; justify-content:flex-end; padding: 12px 16px; border-top: 1px solid var(--glass-border); }
+  #notificationContainer { position: fixed; right: 16px; bottom: 16px; display:flex; flex-direction:column; gap: 8px; z-index: 999; }
+  .notification { opacity: 0; transform: translateY(6px); transition: all .3s ease; padding: 10px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); }
+  .notification.show { opacity: 1; transform: translateY(0); }
+  .sr-only { position: absolute; left: -9999px; }
+
+/* --- Timeline status colors --- */
+.timeline-item { display:flex; gap:12px; align-items:flex-start; }
+.timeline-dot { width:10px; height:10px; border-radius:50%; margin-top:6px; }
+.tl-card { flex:1; border:1px solid var(--border); border-radius:12px; padding:10px 12px; }
+.tl-title { font-weight:700; }
+.tl-time { color: var(--text-muted); font-size:12px; margin-top:4px; }
+.tl-actions { display:flex; gap:6px; margin-top:6px; }
+.tl-badge { font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid var(--border); }
+.state-pending .timeline-dot { background: var(--warning); }
+.state-pending .tl-card { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.4); }
+.state-pending .tl-badge { color: var(--warning); border-color: rgba(245,158,11,.5); }
+.state-success .timeline-dot { background: var(--success); }
+.state-success .tl-card { background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.4); }
+.state-success .tl-badge { color: var(--success); border-color: rgba(16,185,129,.5); }
+.state-danger .timeline-dot { background: var(--danger); }
+.state-danger .tl-card { background: rgba(239,68,68,.12); border-color: rgba(239,68,68,.4); }
+.state-danger .tl-badge { color: var(--danger); border-color: rgba(239,68,68,.5); }
+.status-picker { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+.status-chip { padding:6px 10px; border-radius:999px; border:1px solid var(--border); cursor:pointer; user-select:none; font-size:12px; }
+.status-chip.active { outline: 2px solid var(--accent); }
+.status-chip[data-status="pending"] { background: rgba(245,158,11,.1); }
+.status-chip[data-status="success"] { background: rgba(16,185,129,.1); }
+.status-chip[data-status="danger"]  { background: rgba(239,68,68,.1); }
+</style>
+<script>
+// Shared state & helpers
+const STORAGE_KEY = "rgood_case_data_v2";
+const DEFAULT_DATA = {
+  id: "case_2025_0002",
+  publicToken: "pk_XY9zL1m2",
+  caseNo: "RG-AG-0002/2025",
+  title: "ต่ออายุทะเบียนสารกำจัดวัชพืช",
+  status: "ยื่นคำขอ",
+  progressPct: 50,
+  dueDate: "2025-11-15",
+  product: { tradeName: "RG-Herbex 48SL", commonName: "Glyphosate isopropylamine" },
+  steps: [
+    { key: "receive", label: "รับเรื่อง", state: "completed", date: "2025-09-05" },
+    { key: "precheck", label: "ตรวจเอกสารเบื้องต้น", state: "completed", date: "2025-09-06" },
+    { key: "request_more", label: "ขอเอกสารเพิ่ม", state: "completed", date: "2025-09-08" },
+    { key: "submit", label: "ยื่นคำขอ", state: "active", date: "—" },
+    { key: "waiting_gov", label: "รอผลหน่วยงานรัฐ", state: "pending", date: "—" },
+    { key: "approved", label: "อนุมัติแล้ว", state: "pending", date: "—" },
+    { key: "close", label: "ปิดเคส", state: "pending", date: "—" }
+  ],
+  timeline: [
+    { timestamp: "2025-09-08 12:24", text: "ลูกค้าอัปโหลดหนังสือมอบอำนาจ", type: "user" },
+    { timestamp: "2025-09-06 15:11", text: "ตรวจเอกสารเบื้องต้นเสร็จ", type: "system" },
+    { timestamp: "2025-09-05 09:00", text: "รับเรื่อง เปิดเลขเคส RG-AG-0002/2025", type: "system" }
+  ],
+  reminders: [
+    { id: "r1", title: "ย้ำเอกสารตัวจริงก่อนยื่น", due: "2025-10-01", channel: "email", priority: "medium", active: true }
+  ],
+  chatMessages: [
+    { id: "m1", sender: "staff", name: "คุณสมชาย", message: "สวัสดีครับ มีข้อสงสัยเรื่องเอกสารไหมครับ", timestamp: "2025-09-25 09:00", avatar: "👨‍💼" },
+    { id: "m2", sender: "user", name: "คุณลูกค้า", message: "สวัสดีครับ อยากทราบว่าเอกสารผ่านหรือยังครับ", timestamp: "2025-09-25 09:30", avatar: "👤" }
+  ],
+  lineDeeplink: "https://line.me/R/ti/p/@991cyisb"
+};
+function loadData(){
+  try { const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return structuredClone(DEFAULT_DATA);
+        const parsed = JSON.parse(raw); return { ...structuredClone(DEFAULT_DATA), ...parsed }; }
+  catch { return structuredClone(DEFAULT_DATA); }
+}
+let CASE_DATA = loadData();
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+function showNotification(message, type='success', duration=4000){
+  const container = $('#notificationContainer'); if(!container) return;
+  const n = document.createElement('div'); n.className = `notification ${type}`;
+  n.innerHTML = `<div style="display:flex;align-items:center;gap:12px;"><span>${type==='success'?'✅':type==='error'?'❌':'ℹ️'}</span><span>${message}</span></div>`;
+  container.appendChild(n);
+  setTimeout(()=>n.classList.add('show'),100);
+  setTimeout(()=>{ n.classList.remove('show'); setTimeout(()=>container.removeChild(n),300); }, duration);
+  const aria = $('#ariaLive'); if(aria) aria.textContent = message;
+}
+function persist(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(CASE_DATA)); }catch(e){ console.warn('Persist failed', e);} }
+function formatDateTime(d){ const dt = new Date(d); return isNaN(dt) ? d : dt.toLocaleString('th-TH'); }
+function navActive(page){
+  $$('.tabs a').forEach(a => a.classList.toggle('active', a.dataset.page === page));
+}
+</script>
+</meta></head>
+<body>
+<div class="container">
+<header>
+<div class="logo">RG</div>
+<div class="header-content">
+<h1>R.Good Service — พอร์ทัลลูกค้า</h1>
+<div class="header-status">
+<div class="status-dot"></div>
+<span>ระบบออนไลน์</span>
+</div>
+</div>
+<div class="header-actions">
+<div class="last-update" id="lastUpdate">อัปเดตล่าสุด: <span id="lastUpdateText"></span></div>
+<a class="btn ghost" id="btnLine">ทัก LINE</a>
+<a class="btn" href="profile.html">โปรไฟล์</a>
+</div>
+</header>
+<script>
+      document.addEventListener('DOMContentLoaded', ()=>{
+        const lu = document.getElementById('lastUpdateText');
+        if(lu){ lu.textContent = new Date().toLocaleString('th-TH'); setInterval(()=>lu.textContent = new Date().toLocaleString('th-TH'), 60000); }
+        const btnLine = document.getElementById('btnLine');
+        if(btnLine){ btnLine.addEventListener('click', ()=>window.open(CASE_DATA.lineDeeplink, '_blank')); }
+      });
+    </script>
+<nav class="tabs">
+<a class="tab" data-page="dashboard" href="dashboard.html">แดชบอร์ด</a>
+<a class="tab" data-page="documents" href="documents.html">เอกสาร</a>
+<a class="tab" data-page="timeline" href="timeline.html">ไทม์ไลน์</a>
+<a class="tab" data-page="reminders" href="reminders.html">การแจ้งเตือน</a>
+<a class="tab" data-page="chat" href="chat.html">แชท</a>
+</nav>
+<script>document.addEventListener('DOMContentLoaded', ()=> navActive('timeline'));</script>
+<main>
+<div class="section-header">
+<div class="section-title">ไทม์ไลน์การเปลี่ยนแปลง</div>
+<button class="btn" id="btnRefreshTimeline">รีเฟรช</button>
+</div>
+<div class="card">
+<div class="timeline" id="timeline"></div>
+</div>
+</main>
+</div>
+<div id="notificationContainer"></div>
+<div aria-atomic="true" aria-live="polite" class="sr-only" id="ariaLive"></div>
+<script>
+function renderTimeline(){
+  const t = document.getElementById('timeline');
+  t.innerHTML = '';
+  (CASE_DATA.timeline||[]).forEach(item=>{
+    const el = document.createElement('div');
+    el.className = 'timeline-item';
+    el.innerHTML = `<div class="timeline-dot"></div><div class="timeline-content">
+      <div class="timeline-text">${item.text}</div>
+      <div class="timeline-time">${formatDateTime(item.timestamp)}</div>
+    </div>`;
+    t.appendChild(el);
+  });
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  renderTimeline();
+  document.getElementById('btnRefreshTimeline').addEventListener('click', renderTimeline);
+});
+</script>
+<script>
+// --- Timeline status logic ---
+let TL_ADD_STATUS = 'pending'; // default
+
+function setAddStatus(s) {
+  TL_ADD_STATUS = s;
+  document.querySelectorAll('.status-chip').forEach(el=>{
+    el.classList.toggle('active', el.getAttribute('data-status')===s);
+  });
+}
+
+function addTimeline(text, type='system', status){
+  const st = status || TL_ADD_STATUS || 'pending';
+  (CASE_DATA.timeline ||= []).unshift({
+    timestamp: new Date().toISOString(),
+    text,
+    type,
+    status: st
+  });
+  persist();
+  renderTimeline();
+  showNotification('เพิ่มไทม์ไลน์: ' + text + ' (' + (st==='success'?'ผ่าน':st==='danger'?'ตีกลับ':'รอ') + ')', 'success');
+}
+
+// Cycle status for an existing item by index
+function cycleStatus(idx){
+  const item = CASE_DATA.timeline[idx];
+  if(!item) return;
+  const seq = ['pending','success','danger'];
+  const current = item.status || 'pending';
+  const next = seq[(seq.indexOf(current)+1) % seq.length];
+  item.status = next;
+  persist(); renderTimeline();
+}
+
+// Allow direct set status
+function setStatus(idx, st){
+  const item = CASE_DATA.timeline[idx];
+  if(!item) return;
+  item.status = st;
+  persist(); renderTimeline();
+}
+
+// Override/extend renderTimeline to include colored states + controls
+function renderTimeline(){
+  const t = document.getElementById('timeline');
+  if(!t){ return; }
+  t.innerHTML = '';
+  (CASE_DATA.timeline||[]).forEach((item, i)=>{
+    const st = item.status || 'pending';
+    // outer
+    const wrap = document.createElement('div');
+    wrap.className = 'timeline-item state-' + st;
+    // dot
+    const dot = document.createElement('div');
+    dot.className = 'timeline-dot';
+    // card
+    const card = document.createElement('div');
+    card.className = 'tl-card';
+    const title = document.createElement('div');
+    title.className = 'tl-title';
+    title.textContent = item.text;
+    const meta = document.createElement('div');
+    meta.className = 'tl-time';
+    meta.textContent = new Date(item.timestamp).toLocaleString('th-TH');
+    const badge = document.createElement('span');
+    badge.className = 'tl-badge';
+    badge.textContent = st==='success' ? 'ผ่าน' : (st==='danger' ? 'ตีกลับ' : 'รอ');
+    // actions row
+    const actions = document.createElement('div');
+    actions.className = 'tl-actions';
+    const btnCycle = document.createElement('button');
+    btnCycle.className = 'btn tiny';
+    btnCycle.textContent = 'เปลี่ยนสถานะ';
+    btnCycle.addEventListener('click', ()=> cycleStatus(i));
+
+    const btnPass = document.createElement('button');
+    btnPass.className = 'btn tiny';
+    btnPass.textContent = 'ตั้งเป็น ผ่าน';
+    btnPass.addEventListener('click', ()=> setStatus(i,'success'));
+
+    const btnWait = document.createElement('button');
+    btnWait.className = 'btn tiny';
+    btnWait.textContent = 'ตั้งเป็น รอ';
+    btnWait.addEventListener('click', ()=> setStatus(i,'pending'));
+
+    const btnFail = document.createElement('button');
+    btnFail.className = 'btn tiny';
+    btnFail.textContent = 'ตั้งเป็น ตีกลับ';
+    btnFail.addEventListener('click', ()=> setStatus(i,'danger'));
+
+    actions.append(btnCycle, btnPass, btnWait, btnFail);
+
+    card.append(title, meta, badge, actions);
+    wrap.append(dot, card);
+    t.appendChild(wrap);
+  });
+}
+
+// Bind the status chips and defaulting of old items
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.status-chip').forEach(el=>{
+    el.addEventListener('click', ()=> setAddStatus(el.getAttribute('data-status')));
+  });
+  // Default legacy items without status to 'pending'
+  if (CASE_DATA && Array.isArray(CASE_DATA.timeline)) {
+    let changed = false;
+    CASE_DATA.timeline.forEach(it=>{
+      if(!it.status){ it.status = 'pending'; changed = true; }
+    });
+    if(changed){ persist(); }
+  }
+  // Re-render once to apply colors
+  renderTimeline();
+});
+</script></body>
+</html>
