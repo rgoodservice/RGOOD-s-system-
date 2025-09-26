@@ -137,6 +137,27 @@
   .notification { opacity: 0; transform: translateY(6px); transition: all .3s ease; padding: 10px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--border); }
   .notification.show { opacity: 1; transform: translateY(0); }
   .sr-only { position: absolute; left: -9999px; }
+  /* === Single long stage card === */
+.stage-container { margin: 24px 0; }
+.stage-card{
+  display:flex; justify-content:space-between; align-items:center; gap:16px;
+  padding:18px 20px; border:1px solid var(--glass-border); border-radius:16px;
+  background: rgba(148,163,184,0.06); backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px var(--shadow); transition: .2s;
+}
+.stage-card:hover{ background: var(--card-hover); }
+.stage-left{ display:flex; align-items:center; gap:12px; }
+.stage-dot{ width:12px; height:12px; border-radius:999px; background: var(--success); box-shadow:0 0 12px rgba(16,185,129,.6); }
+.stage-title{ font-weight:700; color:var(--text); font-size:16px; line-height:1.2; }
+.stage-sub{ color:var(--text-muted); font-size:13px; margin-top:4px; }
+.stage-right{ display:flex; align-items:center; gap:8px; }
+
+/* ซ่อนปุ่มสเต็ปเดิม */
+.action-buttons .btn#btnNextStep,
+.action-buttons .btn#btnBackStep,
+.action-buttons .btn#btnResetSteps { display: none !important; }
+.doc-summary-card { display: none !important; }
+
 </style>
 <script>
 // Shared state & helpers
@@ -258,7 +279,7 @@ function navActive(page){
 <div class="progress-header">
 <div class="progress-group">
 <span class="progress-label">ความคืบหน้า</span>
-<strong class="progress-percentage" id="progressPct">50%</strong>
+<strong class="progress-percentage" id="progressPct">21%</strong>
 </div>
 <div style="display:flex; gap:8px;">
 <button class="btn tiny" id="btnAdjustProgress">ปรับเปอร์เซ็นต์</button>
@@ -269,58 +290,25 @@ function navActive(page){
 <div class="progress-fill" id="progressFill" style="width: 50%"></div>
 </div>
 </div>
-<div class="stepper-container">
-<div class="stepper" id="stepper">
-<div class="step completed" data-step="0">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">รับเรื่อง</div>
-<div class="step-date" data-step-date="">2025-09-05</div>
+<!-- Single-stage (รับเรื่อง) -->
+<div class="stage-container">
+  <div class="stage-card">
+    <div class="stage-left">
+      <div class="stage-dot"></div>
+      <div>
+        <div class="stage-title">รับเรื่อง</div>
+        <div class="stage-sub">
+          เปิดเลขเคส <strong id="stageCaseNo">RG-AG-0002/2025</strong>
+          • <span id="stageDate">2025-09-05</span>
+        </div>
+      </div>
+    </div>
+    <div class="stage-right">
+      <span class="status-badge success" id="stageStatus">กำลังดำเนินการ</span>
+    </div>
+  </div>
 </div>
-</div>
-<div class="step completed" data-step="1">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">ตรวจเอกสารเบื้องต้น</div>
-<div class="step-date" data-step-date="">2025-09-06</div>
-</div>
-</div>
-<div class="step completed" data-step="2">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">ขอเอกสารเพิ่ม</div>
-<div class="step-date" data-step-date="">2025-09-08</div>
-</div>
-</div>
-<div class="step active" data-step="3">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">ยื่นคำขอ</div>
-<div class="step-date" data-step-date="">—</div>
-</div>
-</div>
-<div class="step" data-step="4">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">รอผลหน่วยงานรัฐ</div>
-<div class="step-date" data-step-date="">—</div>
-</div>
-</div>
-<div class="step" data-step="5">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">อนุมัติแล้ว</div>
-<div class="step-date" data-step-date="">—</div>
-</div>
-</div>
-<div class="step" data-step="6">
-<div class="step-dot"></div>
-<div class="step-content">
-<div class="step-label">ปิดเคส</div>
-<div class="step-date" data-step-date="">—</div>
-</div>
-</div>
-</div>
+
 <div class="action-buttons" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"><button class="btn primary" id="btnNextStep">ทำขั้นตอนถัดไป ▶</button><button class="btn" id="btnBackStep">ย้อนกลับ ◀</button><button class="btn ghost" id="btnResetSteps">รีเซ็ตขั้นตอน</button></div></div>
 <div class="action-buttons">
 <button class="btn primary" id="btnUpload">อัปโหลดเอกสาร</button>
@@ -328,26 +316,7 @@ function navActive(page){
 <button class="btn ghost" id="btnShare">แชร์ลิงก์ติดตาม</button>
 </div>
 </div>
-<div class="doc-summary-card">
-<div class="summary-header">
-<div class="summary-title">สรุปเอกสาร</div>
-<button class="btn" id="btnNewDoc">เพิ่มเอกสาร</button>
-</div>
-<div class="summary-stats" id="docSummary">
-<div class="summary-item">
-<div class="summary-label">ผ่านการตรวจ</div>
-<div class="summary-count success" id="docApproved">1</div>
-</div>
-<div class="summary-item">
-<div class="summary-label">รอตรวจ</div>
-<div class="summary-count muted" id="docPending">1</div>
-</div>
-<div class="summary-item">
-<div class="summary-label">ใกล้หมดอายุ/หมดอายุ</div>
-<div class="summary-count warning" id="docExpiring">0</div>
-</div>
-</div>
-</div>
+
 </div>
 </main>
 </div>
@@ -785,11 +754,33 @@ document.addEventListener('DOMContentLoaded', ()=>{
           document.getElementById('progressPct').textContent = realPct + '%';
         }
         if (realStatus) document.getElementById('caseStatus').textContent = realStatus;
-      }, 400);
+      }, 600);
     }
     i++;
   }, delay);
 })();
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // เลขเคส
+  const caseNo = CASE_DATA.caseNo || '-';
+  document.getElementById('stageCaseNo').textContent = caseNo;
+
+  // วันที่ "รับเรื่อง" ถ้ามี ไม่งั้นใช้ timestamp แรกสุดใน timeline
+  const receiveDate =
+    (CASE_DATA.steps?.find(s => s.key === 'receive')?.date) ||
+    (CASE_DATA.timeline?.[CASE_DATA.timeline.length - 1]?.timestamp) ||
+    '—';
+  document.getElementById('stageDate').textContent = receiveDate;
+
+  // สถานะปัจจุบัน
+  const st = CASE_DATA.status || 'กำลังดำเนินการ';
+  const badge = document.getElementById('stageStatus');
+  badge.textContent = st;
+  badge.classList.remove('success','pending');
+  if (/อนุมัติ|ปิดเคส/.test(st))      badge.classList.add('success');
+  else if (/ขอเอกสาร|รอผล/.test(st)) badge.classList.add('pending');
+});
 </script>
 
 </body>
